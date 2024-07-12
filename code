@@ -1,0 +1,49 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# Load the dataset
+file_path = '/content/HRDataset_v14.csv'
+hr_data = pd.read_csv(file_path)
+
+# Display the first few rows of the dataset
+print("First few rows of the dataset:")
+print(hr_data.head())
+
+# Display the columns in the dataset
+print("\nColumns in the dataset:")
+print(hr_data.columns)
+
+# 'Termd' is the target variable indicating employee turnover
+target_variable = 'Termd'
+
+# Identify features and target
+X = hr_data.drop(columns=[target_variable])
+y = hr_data[target_variable]
+
+# Encode categorical variables
+X = pd.get_dummies(X)
+
+# Handle missing values
+imputer = SimpleImputer(strategy='mean')
+X = imputer.fit_transform(X)
+
+# Split the data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialize and train the model
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+
+# Make predictions
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+report = classification_report(y_test, y_pred)
+
+print("\nModel Accuracy:", accuracy)
+print("\nClassification Report:")
+print(report)
